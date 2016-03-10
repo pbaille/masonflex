@@ -6,6 +6,7 @@
            [:body
             {:font-size (px 16)
              :line-height 1.5}
+            ["*" {:box-sizing :border-box}]
             [:.main {:display :flex}
              [:.column {:display :flex
                         :flex-flow "column nowrap"
