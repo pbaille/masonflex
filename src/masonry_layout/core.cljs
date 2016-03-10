@@ -31,8 +31,6 @@
   (let [[x & xs] (reverse (sort-by :y (colonize n-cols heights)))]
     (cons x (map distribute-diff (add-diffs (:y x) xs)))))
 
-#_(masonry1 3 (repeatedly 20 (fn [] {:height (rand-nth (range 40 400))})))
-
 (defn- remove-overflowing-xs [max-height col]
   (assoc col
     :xs
@@ -46,9 +44,13 @@
         xs (map (partial remove-overflowing-xs max-height) xs)]
     (cons x (map distribute-diff (add-diffs (:y x) xs)))))
 
-#_(masonry2 3 200 (repeatedly 20 (fn [] {:height (rand-nth (range 40 400))})))
+(comment
+  (masonry1 3 (repeatedly 20 (fn [] {:height (rand-nth (range 40 400))})))
+  (masonry2 3 200 (repeatedly 20 (fn [] {:height (rand-nth (range 40 400))}))))
 
-(defn masonry-demo2 [n-cols max-height text-height items]
+;; -------------------------------------------------------------------------------------------------
+
+(defn demo [{:keys [n-cols max-height text-height items]}]
   (let [xs (map (partial remove-overflowing-xs max-height)
                 (reverse (sort-by :y (colonize n-cols items))))]
     [:div.main
@@ -65,10 +67,14 @@
            [:div.image
             {:style {:height (str (:img-height i) "px")}}]])])]))
 
-(defn gen-pseudo-messages [n text-height]
-  (repeatedly n (fn [] (let [rand-height (rand-nth (cons 0 (range 50 400 50)))]
+(defn gen-pseudo-messages [n {:keys [text-height max-height]}]
+  (repeatedly n (fn [] (let [rand-height (rand-int max-height)]
                           {:height (+ rand-height text-height)
                            :img-height rand-height}))))
 
-(r/render-component [masonry-demo2 3 1000 60 (gen-pseudo-messages 50 60)]
+(r/render-component [demo
+                     {:n-cols 3
+                      :text-height 50
+                      :max-height 1000
+                      :items (gen-pseudo-messages 100 {:text-height 50 :max-height 200})}]
                     (.getElementById js/document "app"))
